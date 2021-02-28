@@ -19,6 +19,8 @@ options = webdriver.ChromeOptions()
 options.add_argument("user-agent=Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:85.0) Gecko/20100101 Firefox/85.0")
 
 options.add_argument("--disable-blink-features=AutomationControlled")
+options.add_argument('headless')
+options.add_argument('window-size=1920x935')
 
 driver = webdriver.Chrome(
     executable_path=os.path.abspath('chromedriver'),
@@ -44,6 +46,8 @@ try:
             except TimeoutException:
                 pass
             driver.implicitly_wait(15)
+            driver.find_element_by_xpath('/html').send_keys(Keys.END)
+            time.sleep(0.5)
             pages = driver.find_elements_by_xpath('//a[@class="Link Link_theme_normal OrganicTitle-Link OrganicTitle-Link_wrap Typo Typo_text_l Typo_line_m organic__url link"]')
             if pages == []:
                 print('Капча! Решаем...')
@@ -64,13 +68,14 @@ try:
                 all_pages.append(i.get_attribute('href'))
     print(f'Найдено всего {len(all_pages)} сайтов')
     for q in range(len(all_pages)):
+        email = 'Почта не найдена'
         try:
             print(f'Парсинг почт {q + 1} из {len(all_pages)}')
         except Exception:
             pass
         try:
             driver.get(all_pages[q])
-        except TimeoutException:
+        except Exception:
             pass
         driver.implicitly_wait(15)
         url = driver.current_url
@@ -80,7 +85,6 @@ try:
                 print(body[i])
             except Exception:
                 print('a')"""
-            email = 'Почта не найдена'
             try:
                 if '@' in body[i]:
                     if (re.search(regex, body[i])):
